@@ -20,18 +20,12 @@ class CJ_Latest_Update_Date {
 	}
 
 	private function get_latest_updated_post() {
-		$posts = get_posts( array( 'post_type' => array( 'post', 'page' ), 'numberposts' => 1, 'orderby' => 'modified' ) );
+		$posts = get_posts( apply_filters( 'latest_update_date_query_args', array( 'post_type' => array( 'post', 'page' ), 'numberposts' => 1, 'orderby' => 'modified' ) ) );
 
-		if ( isset( $posts[0] ) ) {
-			return $posts[0];
-		}
-
-		return false;
+		return ( isset( $posts[0] ) ) ? $posts[0] : false;
 	}
 
 	public function output_footer() {
-		$conditionals = get_option('latest-update_conditionals');
-		
 		if ( apply_filters( 'latest_update_date_show_in_footer', true ) ) {
 			if ( $latest_updated_post = $this->get_latest_updated_post() ) {
 				$output = apply_filters( 'latest_update_date_before_element', '<p>' );
