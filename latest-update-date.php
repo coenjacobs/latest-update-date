@@ -19,23 +19,29 @@ class CJ_Latest_Update_Date {
 		add_filter( 'wp_footer', array( &$this, 'output_footer' ) );
 	}
 
-	private function get_latest_update() {
-		$query = mysql_query("SELECT MAX(post_modified) AS maxnum FROM wp_posts WHERE post_status = 'publish'");
-		$row = mysql_fetch_array($query);
-		return $row['maxnum'];
+	private function get_latest_updated_post() {
+		$posts = get_posts( array( 'post_type' => array( 'post', 'page' ), 'numberposts' => 1, 'orderby' => 'modified' ) );
+
+		if ( isset( $posts[0] ) ) {
+			return $posts[0];
+		}
+
+		return false;
 	}
 
 	public function output_footer() {
 		$conditionals = get_option('latest-update_conditionals');
 		
 		if ( apply_filters( 'latest_update_date_show_in_footer', true ) ) {
-			$output = apply_filters( 'latest_update_date_before_element', '<p>' );
-			$output .= apply_filters( 'latest_update_date_before_text', 'Latest update date:' );
-			$output .= ' ' . mysql2date( 'j-n-Y', $this->get_latest_update() ) . ' ';
-			$output .= apply_filters( 'latest_update_date_after_text', '' );
-			$output .= apply_filters( 'latest_update_date_after_element', '</p>' );
-			
-			echo $output;
+			if ( $latest_updated_post = $this->get_latest_updated_post() ) {
+				$output = apply_filters( 'latest_update_date_before_element', '<p>' );
+				$output .= apply_filters( 'latest_update_date_before_text', 'Latest update date:' );
+				$output .= ' ' . mysql2date( 'j-n-Y', $latest_updated_post->post_modified ) . ' ';
+				$output .= apply_filters( 'latest_update_date_after_text', '' );
+				$output .= apply_filters( 'latest_update_date_after_element', '</p>' );
+				
+				echo $output;
+			}
 		}
 	}
 }
