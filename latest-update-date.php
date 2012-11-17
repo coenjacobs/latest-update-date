@@ -87,13 +87,15 @@ class CJ_Latest_Update_Date {
 
 		// Final check if we have a post, create and return the output if so
 		if ( $latest_updated_post ) {
-			$output = $before_element;
-			$output .= $before_text;
-			$output .= ' ' . mysql2date( $date_format, $latest_updated_post->post_modified ) . ' ';
-			$output .= $after_text;
-			$output .= $after_element;
+			$args = array(
+				'date_format'    => $date_format,
+				'before_element' => $before_element,
+				'before_text'    => $before_text,
+				'after_text'     => $after_text,
+				'after_element'  => $after_element,
+			);
 			
-			return $output;
+			return $this->do_markup( $latest_updated_post, $args, false );
 		}
 	}
 
@@ -107,14 +109,37 @@ class CJ_Latest_Update_Date {
 	public function output_footer() {
 		if ( apply_filters( 'latest_update_date_show_in_footer', true ) ) {
 			if ( $latest_updated_post = $this->get_latest_updated_post() ) {
-				$output = $this->before_element;
-				$output .= $this->before_text;
-				$output .= ' ' . mysql2date( $this->date_format, $latest_updated_post->post_modified ) . ' ';
-				$output .= $this->after_text;
-				$output .= $this->after_element;
+				$args = array(
+					'date_format'    => $this->date_format,
+					'before_element' => $this->before_element,
+					'before_text'    => $this->before_text,
+					'after_text'     => $this->after_text,
+					'after_element'  => $this->after_element,
+				);
 				
-				echo $output;
+				$this->do_markup( $latest_updated_post, $args, true );
 			}
+		}
+	}
+
+	/**
+	 * Prepare the output and output or return it
+	 *
+	 * @param post object Contains the post date 
+	 * @param args array All arguments used for display
+	 * @param echo_output bool Echo directly, or return if false
+	 */
+	public function do_markup( $post, $args, $echo_output = true ) {
+		$output = $args['before_element'];
+		$output .= $args['before_text'];
+		$output .= ' ' . mysql2date( $args['date_format'], $post->post_modified ) . ' ';
+		$output .= $args['after_text'];
+		$output .= $args['after_element'];
+
+		if ( $echo_output ) {
+			echo $output;
+		} else {
+			return $output;
 		}
 	}
 }
