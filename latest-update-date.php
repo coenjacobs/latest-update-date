@@ -128,6 +128,8 @@ class CJ_Latest_Update_Date {
 	 * @param post object Contains the post date 
 	 * @param args array All arguments used for display
 	 * @param echo_output bool Echo directly, or return if false
+	 * @return string If not echoed directly, containing the prepared string, else void
+	 * @since 1.0
 	 */
 	public function do_markup( $post, $args, $echo_output = true ) {
 		$output = $args['before_element'];
